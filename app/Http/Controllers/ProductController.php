@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProductRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -12,9 +15,18 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Product::all();
+        $products = Product::latest()->paginate(5);
+        $currentPage = $request->input('page', 1);
+
+        return response()->json([
+            'data' => $products->items(),
+            'current_page' => $currentPage,
+            'per_page' => 5,
+            'total' => $products->total(),
+            'last_page' => $products->lastPage(),
+        ]);
     }
 
     /**
@@ -23,15 +35,31 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'slug' => 'required',
-            'price' => 'required'
-        ]);
+        try {
+            $imageName = Str::random(32) . "." . $request->image->getClientOriginalExtension();
 
-        return Product::create($request->all());
+            // Create Product
+            Product::create([
+                'name' => $request->name,
+                'image' => $imageName,
+                'price' => $request->price,
+                'description' => $request->description
+            ]);
+
+            // Save Image in Storage folder
+            Storage::disk('public')->put($imageName, file_get_contents($request->image));
+
+            // Return Json Response
+            return response()->json([
+                'message' => "Product successfully created."
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Something went really wrong!'
+            ], 500);
+        }
     }
 
     /**
@@ -52,11 +80,48 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(ProductRequest $request, $id)
     {
-        $product = Product::find($id);
-        $product->update($request->all());
-        return $product;
+        try {
+            $product = Product::find($id);
+
+            if (!$product) {
+                return response()->json([
+                    'message' => 'Product not found!'
+                ], 404);
+            }
+
+            $product->name = $request->name;
+            $product->price = $request->price;
+            $product->description = $request->description;
+
+            if ($request->image) {
+                $storage = Storage::disk('public');
+                // delete old image
+                if ($storage->exists($product->image)) {
+                    $storage->delete($product->image);
+                }
+
+                // Image name
+                $imageName = Str::random(32) . "." . $request->image->getClientOriginalExtension();
+                $product->image = $imageName;
+
+                // Image save in public folder
+                $storage->put($imageName, file_get_contents($request->image));
+            }
+
+            //Update Product
+            $product->save();
+
+            return response()->json([
+                'message' => 'Product successfully updated!'
+            ], 200);
+        } catch (\Exception $e) {
+            //throw $th;
+            return response()->json([
+                'message' => 'Something went really wrong!'
+            ], 500);
+        }
     }
 
     /**
@@ -67,7 +132,34 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        return Product::destroy($id);
+        // Delete
+        try {
+            $product = Product::find($id);
+
+            if (!$product) {
+                return response()->json([
+                    'message' => 'Product not found!'
+                ], 404);
+            }
+
+            $storage = Storage::disk('public');
+            // delete old image
+            if ($storage->exists($product->image)) {
+                $storage->delete($product->image);
+            }
+
+            // Delete Product
+            $product->delete();
+
+            return response()->json([
+                'message' => 'Product successfully deleted!'
+            ], 200);
+        } catch (\Exception $e) {
+            //throw $th;
+            return response()->json([
+                'message' => 'Something went really wrong!'
+            ], 500);
+        }
     }
 
     /**
