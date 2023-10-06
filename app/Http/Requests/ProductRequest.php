@@ -13,7 +13,7 @@ class ProductRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,10 +21,21 @@ class ProductRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
+    {
+       return [
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric|between:0.01,9999.99',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ];
+    }
+    public function messages()
     {
         return [
-            //
+            'name.required' => 'Name is required',
+            'price.required' => 'Price is required',
+            'description.required' => 'Description is required',
         ];
     }
 }
