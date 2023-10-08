@@ -1,28 +1,28 @@
 <?php
 
-namespace App\Actions\CategoryAction;
+namespace App\Actions\CategoryActions;
 
 use App\Models\Category;
 use Exception;
 
-class UpdateCategoryAction
+class DeleteCategoryAction
 {
-    public function execute(array $data, int $id)
+    public function execute(int $id)
     {
         try {
-            $category = Category::findOrFail($id);
+            $category = Category::find($id);
 
             if (!$category) {
                 return response()->json([
                     'message' => 'Category not found!'
                 ], 404);
-            } else {
-                $category->update($data);
-
-                return response()->json([
-                    'message' => 'Category successfully updated!'
-                ], 200);
             }
+
+            $category->delete();
+
+            return response()->json([
+                'message' => 'Category successfully deleted!'
+            ], 200);
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Something went really wrong!'

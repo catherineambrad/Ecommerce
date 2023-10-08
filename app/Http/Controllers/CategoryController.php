@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\CategoryAction\CreateCategoryAction;
-use App\Actions\CategoryAction\DeleteCategoryAction;
-use App\Actions\CategoryAction\ReadAllCategoriesAction;
-use App\Actions\CategoryAction\UpdateCategoryAction;
+use App\Actions\CategoryActions\CreateCategoryAction;
+use App\Actions\CategoryActions\DeleteCategoryAction;
+use App\Actions\CategoryActions\ReadAllCategoriesAction;
+use App\Actions\CategoryActions\UpdateCategoryAction;
 use App\Http\Requests\CategoryRequest;
 
 class CategoryController extends Controller

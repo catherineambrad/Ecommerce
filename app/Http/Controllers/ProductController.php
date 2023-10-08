@@ -5,12 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProductRequest;
 use Illuminate\Http\Request;
 
-use App\Actions\ProductAction\CreateProductAction;
-use App\Actions\ProductAction\ReadProductAction;
-use App\Actions\ProductAction\UpdateProductAction;
-use App\Actions\ProductAction\DeleteProductAction;
-use App\Actions\ProductAction\SearchProductAction;
-use App\Actions\ProductAction\ShowOneProductAction;
+use App\Actions\ProductActions\CreateProductAction;
+use App\Actions\ProductActions\ReadProductAction;
+use App\Actions\ProductActions\UpdateProductAction;
+use App\Actions\ProductActions\DeleteProductAction;
+use App\Actions\ProductActions\SearchProductAction;
+use App\Actions\ProductActions\ShowOneProductAction;
 
 class ProductController extends Controller
 {

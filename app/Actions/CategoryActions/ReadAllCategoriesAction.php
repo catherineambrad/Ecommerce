@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\CategoryAction;
+namespace App\Actions\CategoryActions;
 
 use App\Models\Category;
 

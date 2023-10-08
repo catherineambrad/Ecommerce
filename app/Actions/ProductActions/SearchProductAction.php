@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\ProductAction;
+namespace App\Actions\ProductActions;
 
 use App\Models\Product;
 
