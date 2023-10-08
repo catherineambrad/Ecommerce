@@ -2,49 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\UserActions\LoginUserAction;
+use App\Actions\UserActions\LogoutUserAction;
+use App\Actions\UserActions\RegisterUserAction;
 use App\Http\Requests\AuthRequest;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function register(AuthRequest $request)
+    public function register(RegisterUserAction $registerUserAction, AuthRequest $request)
     {
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password)
-        ]);
-
-        $token = $user->createToken('myapptoken')->plainTextToken;
-
-        $response = ['user' => $user, 'token' => $token];
-
-        return response($response, 201);
+        return $registerUserAction->execute($request->validated());
     }
 
-    public function login(AuthRequest $request)
+    public function login(LoginUserAction $loginUserAction, AuthRequest $request)
     {
-        // Check email 
-        $user = User::where('email', $request->email)->first();
-
-        // Check password
-        if (!$user || !Hash::check($request->password, $user->password))
-            return response(['message' => 'Bad creds'], 401);
-
-
-        $token = $user->createToken('myapptoken')->plainTextToken;
-
-        $response = ['user' => $user, 'token' => $token];
-
-        return response($response, 201);
+        return $loginUserAction->execute($request->validated());
     }
 
-    public function logout(Request $response)
+    public function logout(LogoutUserAction $logoutUserAction)
     {
-        auth()->user()->tokens()->delete();
-
-        return ['message' => 'Logged out'];
+        return $logoutUserAction->execute();
     }
 }
