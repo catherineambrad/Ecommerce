@@ -3,10 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductRequest;
-use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+
+use App\Actions\ProductAction\CreateProductAction;
+use App\Actions\ProductAction\ReadProductAction;
+use App\Actions\ProductAction\UpdateProductAction;
+use App\Actions\ProductAction\DeleteProductAction;
+use App\Actions\ProductAction\SearchProductAction;
+use App\Actions\ProductAction\ShowOneProductAction;
 
 class ProductController extends Controller
 {
@@ -15,18 +19,9 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(ReadProductAction $readProductAction, Request $request)
     {
-        $products = Product::latest()->paginate(5);
-        $currentPage = $request->input('page', 1);
-
-        return response()->json([
-            'data' => $products->items(),
-            'current_page' => $currentPage,
-            'per_page' => 5,
-            'total' => $products->total(),
-            'last_page' => $products->lastPage(),
-        ]);
+        return $readProductAction->execute(['page' => $request->input('page', 1)]);
     }
 
     /**
@@ -35,31 +30,9 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(ProductRequest $request)
+    public function store(CreateProductAction $createProductAction, ProductRequest $request)
     {
-        try {
-            $imageName = Str::random(32) . "." . $request->image->getClientOriginalExtension();
-
-            // Create Product
-            Product::create([
-                'name' => $request->name,
-                'image' => $imageName,
-                'price' => $request->price,
-                'description' => $request->description
-            ]);
-
-            // Save Image in Storage folder
-            Storage::disk('public')->put($imageName, file_get_contents($request->image));
-
-            // Return Json Response
-            return response()->json([
-                'message' => "Product successfully created."
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Something went really wrong!'
-            ], 500);
-        }
+        return $createProductAction->execute($request->validated());
     }
 
     /**
@@ -68,9 +41,9 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(ShowOneProductAction  $showOneProductAction, $id)
     {
-        return Product::find($id);
+        return $showOneProductAction->execute($id);
     }
 
     /**
@@ -80,48 +53,9 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(ProductRequest $request, $id)
+    public function update(UpdateProductAction $updateProductAction, ProductRequest $request, $id)
     {
-        try {
-            $product = Product::find($id);
-
-            if (!$product) {
-                return response()->json([
-                    'message' => 'Product not found!'
-                ], 404);
-            }
-
-            $product->name = $request->name;
-            $product->price = $request->price;
-            $product->description = $request->description;
-
-            if ($request->image) {
-                $storage = Storage::disk('public');
-                // delete old image
-                if ($storage->exists($product->image)) {
-                    $storage->delete($product->image);
-                }
-
-                // Image name
-                $imageName = Str::random(32) . "." . $request->image->getClientOriginalExtension();
-                $product->image = $imageName;
-
-                // Image save in public folder
-                $storage->put($imageName, file_get_contents($request->image));
-            }
-
-            //Update Product
-            $product->save();
-
-            return response()->json([
-                'message' => 'Product successfully updated!'
-            ], 200);
-        } catch (\Exception $e) {
-            //throw $th;
-            return response()->json([
-                'message' => 'Something went really wrong!'
-            ], 500);
-        }
+        return $updateProductAction->execute($request->validated(), $id);
     }
 
     /**
@@ -130,36 +64,9 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(DeleteProductAction $deleteProductAction, $id)
     {
-        // Delete
-        try {
-            $product = Product::find($id);
-
-            if (!$product) {
-                return response()->json([
-                    'message' => 'Product not found!'
-                ], 404);
-            }
-
-            $storage = Storage::disk('public');
-            // delete old image
-            if ($storage->exists($product->image)) {
-                $storage->delete($product->image);
-            }
-
-            // Delete Product
-            $product->delete();
-
-            return response()->json([
-                'message' => 'Product successfully deleted!'
-            ], 200);
-        } catch (\Exception $e) {
-            //throw $th;
-            return response()->json([
-                'message' => 'Something went really wrong!'
-            ], 500);
-        }
+        return $deleteProductAction->execute($id);
     }
 
     /**
@@ -168,8 +75,8 @@ class ProductController extends Controller
      * @param  str  $name
      * @return \Illuminate\Http\Response
      */
-    public function search($name)
+    public function search(SearchProductAction $searchProductAction, Request $request)
     {
-        return Product::where('name', 'like', '%' . $name . '%')->get();
+        return $searchProductAction->execute($request->name, $request->category_id);
     }
 }
