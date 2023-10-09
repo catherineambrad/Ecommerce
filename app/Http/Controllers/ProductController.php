@@ -11,6 +11,7 @@ use App\Actions\ProductActions\UpdateProductAction;
 use App\Actions\ProductActions\DeleteProductAction;
 use App\Actions\ProductActions\SearchProductAction;
 use App\Actions\ProductActions\ShowOneProductAction;
+use App\Actions\ProductActions\UserProductsAction;
 
 class ProductController extends Controller
 {
@@ -78,5 +79,11 @@ class ProductController extends Controller
     public function search(SearchProductAction $searchProductAction, Request $request)
     {
         return $searchProductAction->execute($request->name, $request->category_id);
+    }
+
+    public function getUserProducts(UserProductsAction $userProductsAction, Request $request)
+    {
+        // return response()->json(['products' => $userProductsAction->execute($request)]);
+        return $userProductsAction->execute(['page' => $request->input('page', 1)]);
     }
 }
