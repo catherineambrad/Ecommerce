@@ -4,6 +4,9 @@
 
 This Laravel backend serves as the core of our e-commerce platform, handling server-side logic, data storage, and providing API endpoints for our React.js frontend. It includes features such as user authentication, product management, and order processing.
 
+## Design of Project
+![Screenshot 2023-10-08 000203](https://github.com/ABDALLAH-ATGUIRI/e-commerce-laravel/assets/94124850/67cd1a61-19e9-4346-b047-4570d79a29a3)
+
 ## Table of Contents
 
 1. [Project Structure](#project-structure)
@@ -13,8 +16,6 @@ This Laravel backend serves as the core of our e-commerce platform, handling ser
     - [Installation](#installation)
     - [Configuration](#configuration)
 5. [Contributing](#contributing)
-6. [License](#license)
-7. [Acknowledgments](#acknowledgments)
 
 ## Project Structure
 
