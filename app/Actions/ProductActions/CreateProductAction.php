@@ -3,6 +3,7 @@
 namespace App\Actions\ProductActions;
 
 use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -13,13 +14,16 @@ class CreateProductAction
         try {
             $imageName = Str::random(32) . "." . $data['image']->getClientOriginalExtension();
 
+            $user = Auth::user();
+
             // Create Product
             Product::create([
                 'name' => $data['name'],
                 'image' => $imageName,
                 'price' => $data['price'],
                 'description' => $data['description'],
-                'category_id' => $data['category_id']
+                'category_id' => $data['category_id'],
+                'user_id' => $user->id
             ]);
 
             // Save Image in Storage folder
@@ -29,7 +33,6 @@ class CreateProductAction
             return response()->json([
                 'message' => "Product successfully created."
             ], 200);
-            
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Something went really wrong!'
