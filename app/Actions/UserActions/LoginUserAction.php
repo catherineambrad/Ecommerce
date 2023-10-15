@@ -14,13 +14,10 @@ class LoginUserAction
 
         // Check password
         if (!$user || !Hash::check($data['password'], $user->password))
-            return response(['message' => 'Bad creds'], 401);
-
+            return response(['message' => 'Bad cred'], 401);
 
         $token = $user->createToken('myapptoken')->plainTextToken;
 
-        $response = ['user' => $user, 'token' => $token];
-
-        return response($response, 201);
+        return response(['user' => $user, 'token' => $token], 201)->withCookie('token', $token, config('jwt.ttl'), '/', 'localhost', false, false);
     }
 }
