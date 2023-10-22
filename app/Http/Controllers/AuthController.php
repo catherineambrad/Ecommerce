@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\UserActions\LoginUserAction;
 use App\Actions\UserActions\LogoutUserAction;
 use App\Actions\UserActions\RegisterUserAction;
-use App\Actions\UserActions\ValidateToken;
+use App\Actions\UserActions\RefreshToken;
 use App\Http\Requests\AuthRequest;
 
 class AuthController extends Controller
@@ -25,8 +25,8 @@ class AuthController extends Controller
         return $logoutUserAction->execute();
     }
 
-    public function token(ValidateToken $validateToken)
+    public function refreshToken(RefreshToken $refreshToken)
     {
-        return $validateToken->execute();
+        return $refreshToken->execute();
     }
 }
