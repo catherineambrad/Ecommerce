@@ -31,15 +31,4 @@ class ProductRequest extends FormRequest
             'category_id' => 'required|exists:categories,id'
         ];
     }
-
-    public function messages()
-    {
-        return [
-            'name.required' => 'Name is required',
-            'price.required' => 'Price is required',
-            'description.required' => 'Description is required',
-            'category_id.required' => 'Category is required',
-            'category_id.exists' => 'The selected category does not exist.'
-        ];
-    }
 }

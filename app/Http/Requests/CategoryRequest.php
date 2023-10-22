@@ -27,11 +27,4 @@ class CategoryRequest extends FormRequest
             'name' => 'required|string|max:255',
         ];
     }
-
-    public function messages()
-    {
-        return [
-            'name.required' => 'Name is required',
-        ];
-    }
 }

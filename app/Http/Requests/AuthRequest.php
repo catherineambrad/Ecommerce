@@ -26,19 +26,4 @@ class AuthRequest extends FormRequest
             ];
         }
     }
-    public function messages()
-    {
-        if (request()->isMethod('post')) {
-            return [
-                'name.required' => 'Name is required',
-                'email.required' => 'Email is required',
-                'password.required' => 'Password is required',
-            ];
-        } else {
-            return [
-                'email.required' => 'Email is required',
-                'password.required' => 'Password is required',
-            ];
-        }
-    }
 }
