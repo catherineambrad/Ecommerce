@@ -3,6 +3,7 @@
 namespace App\Actions\UserActions;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class RegisterUserAction
 {
@@ -18,6 +19,10 @@ class RegisterUserAction
 
         $response = ['user' => $user, 'token' => $token];
 
-        return response($response, 201);
+        if (Auth::attempt($data)) {
+            return response()->json($response, 201)->withCookie('token', $token, config('jwt.ttl'), '/', 'localhost', false, false);
+        } else {
+            return response()->json(['email' => $data['email'], 'massage' => 'Email ou mot de passe incorrect.'], 201);
+        }
     }
 }
