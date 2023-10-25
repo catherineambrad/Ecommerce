@@ -15,14 +15,29 @@ class RegisterUserAction
             'password' => bcrypt($data['password'])
         ]);
 
-        $token = $user->createToken('myapptoken')->plainTextToken;
-
-        $response = ['user' => $user, 'token' => $token];
+        $user_token = $user->createToken('auth_token')->accessToken;
 
         if (Auth::attempt($data)) {
-            return response()->json($response, 201)->withCookie('token', $token, config('jwt.ttl'), '/', 'localhost', false, false);
+            return response()->json([
+                'success' => true,
+                'token' => $user_token,
+                'user' => $user,
+            ], 200)
+                ->withCookie(
+                    'token',
+                    $user_token,
+                    config('jwt.ttl'),
+                    '/',
+                    'localhost',
+                    false,
+                    false
+                );
         } else {
-            return response()->json(['email' => $data['email'], 'massage' => 'Email ou mot de passe incorrect.'], 201);
+            return response()->json([
+                'success' => false,
+                'email' => $data['email'],
+                'massage' => 'Email ou mot de passe incorrect.'
+            ], 401);
         }
     }
 }

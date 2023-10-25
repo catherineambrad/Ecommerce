@@ -2,18 +2,25 @@
 
 namespace App\Actions\UserActions;
 
-use Illuminate\Support\Facades\Auth;
-
 class RefreshToken
 {
     public function execute()
     {
-        $user = Auth::user();
+        $newToken = auth()->user()->createToken('auth_token')->accessToken;
 
-        if ($user) {
-            return response()->json(['success' => true, 'message' => 'Token is valid', 'user' => $user]);
-        } else {
-            return response()->json(['success' => false, 'message' => 'Token is invalid'], 401);
-        }
+        return response()->json([
+            'success' => true,
+            'token' => $newToken,
+            'user' => auth()->user(),
+        ], 200)
+            ->withCookie(
+                'token',
+                $newToken,
+                config('jwt.ttl'),
+                '/',
+                'localhost',
+                false,
+                false
+            );
     }
 }
