@@ -9,7 +9,7 @@ class RegisterUserAction
 {
     public function execute(array $data)
     {
-        $user = User::create([
+        $user = User::with('role')->create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => bcrypt($data['password'])

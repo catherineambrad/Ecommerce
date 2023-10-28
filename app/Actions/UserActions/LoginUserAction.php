@@ -11,7 +11,7 @@ class LoginUserAction
     {
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
             // successfull authentication
-            $user = User::find(Auth::user()->id);
+            $user = User::with('role')->find(Auth::user()->id);
             $user_token = $user->createToken('auth_token')->accessToken;;
 
             return response()->json([

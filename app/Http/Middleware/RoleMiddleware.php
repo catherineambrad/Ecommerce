@@ -14,14 +14,13 @@ class RoleMiddleware
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
-    public function handle(Request $request, Closure $next, ...$roles)
+    public function handle(Request $request, Closure $next, string $role)
     {
         $user = $request->user();
-
-        if ($user && in_array($user->role, $roles)) {
+        if ($user && $user->role->name === $role) {
             return $next($request);
         }
 
-        abort(403);
+        return response()->json(['status' => 403, 'message' => "user is not authorized"], 403);
     }
 }
