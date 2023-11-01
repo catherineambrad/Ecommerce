@@ -3,16 +3,12 @@
 namespace App\Actions\ProductActions;
 
 use App\Models\Product;
-use Illuminate\Support\Facades\Auth;
 
-class UserProductsAction
+class MyProductsAction
 {
     public function execute(array $data)
     {
-        $user = Auth::user();
-
-
-        $products = Product::where('user_id', $user->id)
+        $products = Product::where('user_id', auth()->user()->id)
             ->with(['category'])
             ->latest()
             ->paginate(5);

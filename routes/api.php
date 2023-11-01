@@ -18,8 +18,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::get('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
+Route::get('/login', [AuthController::class, 'login']);
 // });
 
 Route::middleware('auth:api')->group(function () {
@@ -29,7 +29,10 @@ Route::middleware('auth:api')->group(function () {
 
 
 // Protected routes
-Route::resource('products', ProductController::class);
+Route::group(['prefix' => 'products'], function () {
+    Route::get('my-products', [ProductController::class, 'MyProducts']);
+    Route::resource('/', ProductController::class);
+});
 Route::resource('categories', CategoryController::class);
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
